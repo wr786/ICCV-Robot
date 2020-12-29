@@ -134,15 +134,16 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
     short steer = 0;           // [-400, 400]
     short speed = 100;           // [-180, 180]
 
-    //=================added=================
-
+	/* 小车行驶的距离 */
     double dis = inputdata_0.front()->odometry;
-//    double yaw = inputdata_0.front()->orientation * 4 * M_PI / (2 * M_PI + 6.14181); // ?
-    double yaw = inputdata_0.front()->orientation * 4 * M_PI / (2 * M_PI + 4.00555081); // ?
-//    double yaw = inputdata_0.front()->orientation * 4.006568057324839; // ?
+	/* IMU航向角 */
+    double yaw = inputdata_0.front()->orientation * 4 * M_PI / (2 * M_PI + 4.00555081); 
+
     int laserSize = inputdata_1.front()->datasize;
     short* laserData = inputdata_1.front()->data;
     double laserUnit = inputparams_1.front()->unit;
+
+	calc_map(inputdata_0, inputdata_1, laserUnit, vars);
 
     if(!laserData || !params || !vars) {    // errorData
         return 0;
