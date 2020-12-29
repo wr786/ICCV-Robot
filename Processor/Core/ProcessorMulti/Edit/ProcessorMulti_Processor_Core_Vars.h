@@ -23,6 +23,7 @@
 
 #include "ProcessorMulti_Processor_Core_ParamsData.h"
 #include "PIDControler.h"
+#include "OGM.h"
 
 //The Vars is defined as below
 /*! \class ProcessorMulti_Processor_Core_Vars 
@@ -46,7 +47,7 @@ public:
 				map[i] = new double[mapWidth];
 			}
 		} else {
-			map = NUll;
+            map = NULL;
 		}
 	}
 	/*! \fn ~ProcessorMulti_Processor_Core_Vars()
