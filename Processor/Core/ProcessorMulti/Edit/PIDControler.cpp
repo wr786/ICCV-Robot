@@ -59,24 +59,57 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
         vars->first_turning=1;
         vars->mark_1 = 1;
     }
-    //如果左右都是路口，显然按照程序顺序，会被标记为向右
+    //如果遇到的第一个路口是左右双叉，显然按照程序顺序，会被标记为向右
 
-    //比照我是否是沿规划的方向，is_right=0时才需要判断,知道is_right=1以后照走即可
+    //对比规划的方向，is_right=0时才需要判断,知道is_right=1以后照走即可
     if(!(vars->is_right)){
-        //我在正确的顺时针  || 我在正确地逆时针
+        //还没有确定正确路径，我在正确的顺时针  || 我在正确地逆时针
         if((!vars->dir) && (vars->first_turning==0))  //顺时钟
             vars->is_right=1; 
-        if(vars->dir && vars->first_turning) //逆时针
+        else if(vars->dir && vars->first_turning) //逆时针
             vars->is_right=1;
+        else // 肯定是摸索方向与规划方向不同，出错了
+        {
+            //需要对照地图计算是沿当前方向还是扭头，重点是能够定位，这点也需要先验知识
+            //比方说，我应该逆时针走一点就到，结果顺时针走了背面的路口
+            //                          //
+            //                          //
+            //                          //     
+            //                          //     
+            //now                       //     
+            ///////////st//////aim////////
+            if(vars->need_chg[st][ed]){  //如果知识告诉我们直接按照现在的路走，不需要管与规划的冲突
+                vars->is_right=1;
+            }
+            else{
+                vars->State=2;  //应该进入第一次调整路径的状态
+            }
+        }
+    }
+//  以下是State=2的扭头算法
+    if((vars->State==2) && (vars->is_right==0)){  //方向盘打死扭头即可
+        speed=150;
+        steer=600;
+        
+        vars->time_for_chg--;
+        if(vars->time_for_chg == 0){  //认为转弯结束了，此处判断可以结合实时的激光分布细化重写
+            vars->is_right =1;  //终于扭头完毕，找到了正确方向
+        }
+        return {speed, steer};
     }
 
+//前方有路障，进入State=1状态，应该绕障，先探测前方
 
 
-//    bool leftMono = true, rightMono = true;
 
+
+    if()
+
+//    以下是State=0,走中线的PID控制算法
     std::replace(laserData, laserData+laserSize, 0, vars->infDistance);
    // laserSize == 361
    // sum 60 degrees
+   // bool leftMono = true, rightMono = true;
    for(size_t i = 0; i <= 120; i+=2) {
        leftSum += *std::min_element(laserData + i, laserData + i + 1);
    }
@@ -94,12 +127,12 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
    
    int detectRange = vars->forwardDetectRange;
 
-   if(*std::min_element(laserData - detectRange, laserData + detectRange + 1) != 0 && sumDelta < 0 && dir==) {
+   if(*std::min_element(laserData - detectRange, laserData + detectRange + 1) != 0 && sumDelta < 0 ) {
        // if here is a right corner and there is a wall ahead  // notice that its all turning right
        err += 5;   // then turn right! 一般以右转为优先级
       
    }
-   else if(*std::min_element(laserData - detectRange, laserData + detectRange + 1) != 0 && sumDelta < 0 && dir==) {
+   else if(*std::min_element(laserData - detectRange, laserData + detectRange + 1) != 0 && sumDelta < 0 ) {
        // if here is a left corner and there is a wall ahead
        err -= 5;   // then turn left! 有时只有左转路口、前面也有墙，就左转
    }

@@ -79,6 +79,7 @@ public:
 		
 	}
 public:
+	  
 	//*******************Please add variables below*******************
 //    short baseSteer;
 //    int filterRange;

@@ -83,7 +83,8 @@ public:
 	//mark_1相当于锁， mark_1=1就是已经记录了第一个路口的方向
 	bool is_right=0, is_arrive=0, first_turning=0; 
 	//is_right=1之后就不需要管路径了
-	int small_sum=50; //右侧30度的合计，未替换0，这是下限阈值
+	int small_sum=50,time_for_chg=10; //右侧30度的合计，未替换0，这是下限阈值
+	// time_for_chg这么长的时间让它扭头
 	// is_right_dir=0表示是按照正确路径在走
 	// is_arrive=0 表示还没到
 	// first_turning=0 表示遇到的第一个路口是向右，1表示向左
@@ -92,7 +93,11 @@ public:
     // State=0: 走过道中线（default）
 	//State=1 特殊情况，不能找中线，要倒车绕障; 
 	//State=2,第一次调整路线，要扭头
-    
+    // 需要看一下现场的房间号设计知识
+// 给定起点、终点后，由于地形相当简单，我们只需要确认应该顺时针还是逆时针，这部分需要现场看
+    int room_num,st,ed;
+    bool dir_know[room_num][room_num];  //dir_know[i][j]=0表示从i到j应该顺时针走
+    bool need_chg[room_num][room_num]; //need_chg[i][j]=1表示如果i,j没有按照规划路线,就让他按照现有路走了
 	// 
     bool reverse = false;
     double prev_odom;
