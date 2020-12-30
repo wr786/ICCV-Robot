@@ -24,6 +24,8 @@ std::pair<short, short>
 calc_steer(double dis, double yaw, int laserSize, short *laserData, double laserUnit,
                  ProcessorMulti_Processor_Core_Params *params, ProcessorMulti_Processor_Core_Vars *vars) {
 
+    int steer, speed;
+
     // 首先判断是否到达目的地，如果到达就停止
     if(vars->is_arrive) {
         steer=vars->baseSteer;
@@ -64,9 +66,9 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
     //对比规划的方向，is_right=0时才需要判断,知道is_right=1以后照走即可
     if(!(vars->is_right)){
         //还没有确定正确路径，我在正确的顺时针  || 我在正确地逆时针
-        if((!vars->dir) && (vars->first_turning==0))  //顺时钟
+        if(vars->dir == CLOCKWISE && (vars->first_turning==0))  //顺时钟
             vars->is_right=1; 
-        else if(vars->dir && vars->first_turning) //逆时针
+        else if(vars->dir == ANTI_CLOCKWISE && vars->first_turning) //逆时针
             vars->is_right=1;
         else // 肯定是摸索方向与规划方向不同，出错了
         {
@@ -78,16 +80,16 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
             //                          //     
             //now                       //     
             ///////////st//////aim////////
-            if(vars->need_chg[st][ed]){  //如果知识告诉我们直接按照现在的路走，不需要管与规划的冲突
+            if(vars->need_chg[vars->st][vars->ed]){  //如果知识告诉我们直接按照现在的路走，不需要管与规划的冲突
                 vars->is_right=1;
             }
             else{
-                vars->State=2;  //应该进入第一次调整路径的状态
+                vars->State = ADJUST;  //应该进入第一次调整路径的状态
             }
         }
     }
 //  以下是State=2的扭头算法
-    if((vars->State==2) && (vars->is_right==0)){  //方向盘打死扭头即可
+    if((vars->State==ADJUST) && (vars->is_right==0)){  //方向盘打死扭头即可
         speed=150;
         steer=600;
         
@@ -103,7 +105,7 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
 
 
 
-    if()
+//    if() {}
 
 //    以下是State=0,走中线的PID控制算法
     std::replace(laserData, laserData+laserSize, 0, vars->infDistance);
@@ -139,8 +141,8 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
 
    qDebug() << err << " ";
 
-   int steer = vars->pid.step(err);
-   int speed = 150; // turning should be a bit slower
+   steer = vars->pid.step(err);
+   speed = 150; // turning should be a bit slower
 
    if(abs(steer) < vars->straightThreshold) {
        speed = vars->straightSpeed;
