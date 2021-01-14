@@ -1,4 +1,4 @@
-#include "../NoEdit/ProcessorMulti_Processor_Core_PrivFunc.h"
+#include "ProcessorMulti_Processor_Core_Vars.h"
 #include "OGM.h"
 
 void Bresenham(int x1, int y1, int x2, int y2, std::vector<Location>& locationVec)
@@ -96,8 +96,8 @@ void CalcShortestDistance(const Location& startPos, const Location& endPos, std:
 
 /* inputdata_0是位置，inputdata_1是激光 */
 void calc_map(QVector<SourceDrainMono_Sensor_EncoderIMU_Data *> inputdata_0, QVector<SensorTimer_Sensor_URG_Data *> inputdata_1, double laserUnit, ProcessorMulti_Processor_Core_Vars * vars) {
-    if(inputdata_0.size()==0){return 0;}
-    if(inputdata_1.size()==0){return 0;}
+    if(inputdata_0.size()==0){return;}
+    if(inputdata_1.size()==0){return;}
 
     for(int i = 0 ; i < inputdata_1.front()->datasize; i++) {
 		
@@ -116,11 +116,8 @@ void calc_map(QVector<SourceDrainMono_Sensor_EncoderIMU_Data *> inputdata_0, QVe
         //*3.计算激光点在激光雷达坐标系下的位置，并根据参数inputparams_0.front()->isReverse判断是否将lx取相反数。
 			double dis = inputdata_1.front()->data[i] / laserUnit;//计算得到单个激光点的距离返回值
             double angle = i * 180 / inputdata_1.front()->datasize * 3.1415926 / 180.0; //计算得到当前处理激光束在激光雷达坐标系中角度
-            lx = -dis * cos(angle); // reverse it
+            lx = dis * cos(angle);  //? idk if needed to reverse
             ly = dis * sin(angle);
-            if(inputparams_0.front()->isReverse) {
-                lx = -lx;
-            }
 //            qDebug() << dis << " ";
 			
         //*4.进行 激光雷达坐标系->机器人坐标系 变换
@@ -128,7 +125,7 @@ void calc_map(QVector<SourceDrainMono_Sensor_EncoderIMU_Data *> inputdata_0, QVe
 			//inputparams_0.front()->xL，inputparams_0.front()->yL，inputparams_0.front()->aL
             double laser_aL_rad=vars->aL* 3.1415926 / 180.0;//转换为弧度
             rx = vars->xL + (-cos(laser_aL_rad)*lx + sin(laser_aL_rad)*ly);
-            ry = var->yL + (cos(laser_aL_rad)*ly + sin(laser_aL_rad)*lx);
+            ry = vars->yL + (cos(laser_aL_rad)*ly + sin(laser_aL_rad)*lx);
 //            qDebug() << inputparams_0.front()->xL << " " << inputparams_0.front()->yL<< " ";
 
         //*5.进行 机器人坐标系->全局坐标系 变换
@@ -160,16 +157,19 @@ void calc_map(QVector<SourceDrainMono_Sensor_EncoderIMU_Data *> inputdata_0, QVe
             //逐个更新当前激光束途经的栅格点坐标，params->logodd_free，params->logodd_occu为检测到当前坐标为无障碍/有障碍的更新值。
             //logodd_free = -0.7, logodd_occu = 1
 			for (std::vector<Location>::iterator c=locationVec.begin();c!=locationVec.end();c++){
-				if((*c).x >= 0 && (*c).x < params->mapWidth && (*c).y >= 0 && (*c).y < params->mapHeight){
+                if((*c).x >= 0 && (*c).x < vars->mapWidth && (*c).y >= 0 && (*c).y < vars->mapHeight){
                     if(c!=locationVec.end()-1) {
                         if(vars->map[(*c).y][(*c).x] + vars->logodd_free >= lowthres
                         && vars->map[(*c).y][(*c).x] + vars->logodd_free <= upthres)
                             vars->map[(*c).y][(*c).x] += vars->logodd_free;
                     } else {
                         if(vars->map[(*c).y][(*c).x] + vars->logodd_occu <= upthres
-                        && vars->map[(*c).y][(*c).x] + vars->logodd_occu >= lowthres)
+                        && vars->map[(*c).y][(*c).x] + vars->logodd_occu >= lowthres) {
                             vars->map[(*c).y][(*c).x] += vars->logodd_occu;
+                            qDebug() << "Added (" << (*c).y << ", " << (*c).x << ")" << endl;
+                        }
                     }
 				}
 			}
+    }
 }
