@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include "PIDControler.h"
 #include "ProcessorMulti_Processor_Core_Vars.h"
 
@@ -95,20 +96,71 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
         
         vars->time_for_chg--;
         if(vars->time_for_chg == 0){  //认为转弯结束了，此处判断可以结合实时的激光分布细化重写
-            vars->is_right =1;  //终于扭头完毕，找到了正确方向
+            vars->is_right =1;  //终于扭头完毕，找到了正确方向,应该接着走中线
         }
         return {speed, steer};
     }
-
-//前方有路障，进入State=1状态，应该绕障，先探测前方
-
-
-
-
-//    if() {}
-
-//    以下是State=0,走中线的PID控制算法
+//以下为避障状态，考虑走中线本身的局限性，用找最远
+//把0替换为最远大的数值
     std::replace(laserData, laserData+laserSize, 0, vars->infDistance);
+    //前方有路障，进入State=1状态，应该绕障，先探测前方
+    int MMM=188,totMax=0;  //MMM是较远的一个距离阈值
+    int maxi; //maxi是最远的一条激光线，所谓最远，是统计以它为中线，左右30°范围求和
+    for(int i=0;i<laserSize;i++)
+    {
+        int tot=0; //想统计i这条激光左右各自15度的求和
+        for(int j=max(0,i-30);j<min(laserSize,i+30);j++)
+        {
+            if(laserData[j]>MMM) tot++;
+        }
+        if(tot>totMax)
+        {
+            maxi=i; totMax=tot;  
+        }
+    }
+    double far_angle=maxi*0.5/0.985-9; //这个数字？
+    double angle_err=90-far_angle;
+    steer=angle_err/90.0*400;  // 这一行基本没用
+    double P1,P2; //用于计算speed的系数,避障需要减速
+    P1=10.0/90;
+    P2=10.0/laserData[maxi];
+    speed=160-P1*angle_err+P2*laserData[180];  //为什么这么设计
+    if(speed<140) speed=140;
+    if(speed>180) speed=180; //防止溢出
+
+    //想看车子前方左右各自15°，front_dis小于安全距离就倒车
+    int front_dis=1e18;  
+    for(int i=-30;i<=30;i++)  
+        front_dis=min(laserData[180+i],front_dis);
+    static int steer_back=-1; //倒车steer_back
+    if(front_dis<vars->safeDistance)
+    {
+        if(!vars->reverse){
+            steer_back=angel_err>0? -400:400; //方向盘打死
+            vars->reverse=1;
+        }
+    }
+    if(front_dis>2*vars->safeDistance)  //倒车一段时间后，前方探测到的最短距离大于阈值，改为正向
+    {
+        vars->reverse=0;
+    }
+    if(vars->reverse)
+    {
+        vars->State=1;
+        speed=-speed; steer=steer_back;
+        return {speed,steer};
+    }
+    
+    //考察是否拐弯：看差错角在不在40°以内
+    bool is_turn=(abs(angle_err)>40);
+    if(is_turn) 
+    {
+        vars->State=1;
+        speed=angle_err>0? 400:-400;
+        return {speed,steer};
+    }
+  
+//    以下是State=0,走中线的PID控制算法
    // laserSize == 361
    // sum 60 degrees
    // bool leftMono = true, rightMono = true;
@@ -155,8 +207,9 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
    steer = std::min(steer, steerMax);
    speed = std::max(speed, -speedMax);
    speed = std::min(speed, speedMax);
-
+   return {speed,steer};
 //   int filt = vars->filterRange * 2;
+/*
    short* laserMid = laserData + (laserSize - 1) / 2;
    int safeRange = vars->safeAngle * 2;
 
@@ -176,4 +229,5 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
 
 
    return {speed, steer};
+   */
 }
