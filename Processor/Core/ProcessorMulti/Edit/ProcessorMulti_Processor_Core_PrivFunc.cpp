@@ -150,10 +150,29 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
         return 0;
     }
 
-    std::pair<short, short> ret = calc_steer(dis, yaw, laserSize, laserData, laserUnit, params, vars);
-    speed = ret.first;
-    steer = ret.second;
-    qDebug() << speed << ' ' << steer << endl;
+	// 如果这时候到达了终点
+	if(reach_target(inputdata_0.front()->x, inputdata_0.front()->y)) {
+		clear_target();	// 清除目标
+		qDebug() << "[INFO] Target " << currid << endl;
+	}
+
+	if(tarx == 0 && tary == 0) {
+		// 没有目标，应该正在待机
+		speed = 0;
+		steer = 0;
+		//todo 这里的暂停是因为现在暂时没有手势识别
+		// 等以后有了手势识别，应该替换掉这里的暂停
+		if(poscalc_countdown()) {
+			// 暂停一段时间，再去下一个地点
+			next_target();
+		}
+	} else {
+		// 正在行进，使用PID
+		std::pair<short, short> ret = calc_steer(dis, yaw, laserSize, laserData, laserUnit, params, vars);
+    	speed = ret.first;
+    	steer = ret.second;
+	    qDebug() << speed << ' ' << steer << endl;
+	}
 
     //=================added=================
 
