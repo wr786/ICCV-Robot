@@ -56,18 +56,7 @@ public:
 
 	*/
 	ProcessorMulti_Processor_Core_Params() 
-    {/*
-        baseSteer = 40;
-        filterRange = 5;
-        k_p = 20;
-        k_i = 0;
-        k_d = 7;
-        straightThreshold = 30;
-        straightSpeed = 150;
-        infDistance = 17867;
-        backwardDistance = 50;
-        safeAngle = 30;
-        safeDistance = 40;*/
+    {
 	}
 	/*! \fn ~ProcessorMulti_Processor_Core_Params()
 		\brief The destructor of ProcessorMulti_Processor_Core_Params. [required]
@@ -80,15 +69,6 @@ public:
 	}
 public:
 	//*******************Please add variables below*******************
-//    short baseSteer;
-//    int filterRange;
-//    double k_p, k_i, k_d;
-//    double straightThreshold;
-//    int straightSpeed;
-//    int infDistance;
-//    int backwardDistance;
-//    double safeAngle;
-//    int safeDistance;
 };
 
 //The Output Data SourceDrainMono_Sensor_EncoderIMU_Order_InputData is defined in the header below

@@ -24,6 +24,7 @@
 #include "ProcessorMulti_Processor_Core_ParamsData.h"
 #include "PIDControler.h"
 #include "OGM.h"
+#include "poscalc.h"
 
 //The Vars is defined as below
 /*! \class ProcessorMulti_Processor_Core_Vars 

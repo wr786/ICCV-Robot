@@ -143,7 +143,8 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
     short* laserData = inputdata_1.front()->data;
     double laserUnit = inputparams_1.front()->unit;
 
-	calc_map(inputdata_0, inputdata_1, laserUnit, vars);
+	// OGM disabled
+	// calc_map(inputdata_0, inputdata_1, laserUnit, vars);
 
     if(!laserData || !params || !vars) {    // errorData
         return 0;
