@@ -105,9 +105,9 @@ void calc_map(QVector<SourceDrainMono_Sensor_EncoderIMU_Data *> inputdata_0, QVe
 		//下列步骤中需要编程的有3，4，5，8
 		
 		//1.分别定义激光点在全局坐标系（GPS），机器人坐标系，激光雷达坐标系中的坐标变量
-			double gx, gy;//激光点在全局坐标系中的位置 单位m
-			double rx, ry;//激光点在机器人坐标系中的位置 单位m
-			double lx, ly;//激光点在激光雷达坐标系中的位置 单位m
+			double gx, gy; //激光点在全局坐标系中的位置 单位m
+			double rx, ry; //激光点在机器人坐标系中的位置 单位m
+			double lx, ly; //激光点在激光雷达坐标系中的位置 单位m
 		
 		//2.若激光点返回测距值为0，则为无效数据，将其滤除。
 			if(inputdata_1.front()->data[i] == 0)
