@@ -1,4 +1,3 @@
-#include "ProcessorMulti_Processor_Core_Vars.h"
 #include "poscalc.h"
 
 /* get_delta2 - get (a-b)^2 */
@@ -93,6 +92,7 @@ bool reach_target(double botx, double boty) {
 
 /* next_target - set target according to the route */
 void next_target() {
+    if(currid == ROUTELEN) return;
     set_target(route[currid], route[currid + 1]);
     currid++;
 }

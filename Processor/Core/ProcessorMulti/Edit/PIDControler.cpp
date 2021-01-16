@@ -2,6 +2,7 @@
 #include <cmath>
 #include "PIDControler.h"
 #include "ProcessorMulti_Processor_Core_Vars.h"
+using namespace std;
 
 void PIDControler::set_ks(double kp, double ki, double kd) {
     k_p = kp;
@@ -131,12 +132,12 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
     //想看车子前方左右各自15°，front_dis小于安全距离就倒车
     int front_dis=1e18;  
     for(int i=-30;i<=30;i++)  
-        front_dis=min(laserData[180+i],front_dis);
+        front_dis=min((int)laserData[180+i],front_dis);
     static int steer_back=-1; //倒车steer_back
     if(front_dis<vars->safeDistance)
     {
         if(!vars->reverse){
-            steer_back=angel_err>0? -400:400; //方向盘打死
+            steer_back=angle_err>0? -400:400; //方向盘打死
             vars->reverse=1;
         }
     }
@@ -146,7 +147,7 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
     }
     if(vars->reverse)
     {
-        vars->State=1;
+        vars->State=BYPASS;
         speed=-speed; steer=steer_back;
         return {speed,steer};
     }
@@ -155,7 +156,7 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
     bool is_turn=(abs(angle_err)>40);
     if(is_turn) 
     {
-        vars->State=1;
+        vars->State=BYPASS;
         speed=angle_err>0? 400:-400;
         return {speed,steer};
     }

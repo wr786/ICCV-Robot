@@ -30,7 +30,8 @@ SOURCES += \
 	./Processor/Core/ProcessorMulti/Edit/ProcessorMulti_Processor_Core_PrivFunc.cpp	\
 	./Processor/Core/ProcessorMulti/NoEdit/ProcessorMulti_Processor_Core_PrivCoreFunc.cpp \	
     Processor/Core/ProcessorMulti/Edit/PIDControler.cpp \
-    Processor/Core/ProcessorMulti/Edit/OGM.cpp
+    Processor/Core/ProcessorMulti/Edit/OGM.cpp \
+    Processor/Core/ProcessorMulti/Edit/poscalc.cpp
 	Processor/Core/ProcessorMulti/Edit/OGM.cpp
 
 HEADERS += \
@@ -95,5 +96,6 @@ HEADERS += \
 	./Processor/Core/ProcessorMulti/NoEdit/ProcessorMulti_Processor_Core_PrivFunc.h	\
 	./Processor/Core/ProcessorMulti/NoEdit/ProcessorMulti_Processor_Core_PrivCoreFunc.h \	
     Processor/Core/ProcessorMulti/Edit/PIDControler.h \
-    Processor/Core/ProcessorMulti/Edit/OGM.h
+    Processor/Core/ProcessorMulti/Edit/OGM.h \
+    Processor/Core/ProcessorMulti/Edit/poscalc.h
 	Processor/Core/ProcessorMulti/Edit/OGM.h
