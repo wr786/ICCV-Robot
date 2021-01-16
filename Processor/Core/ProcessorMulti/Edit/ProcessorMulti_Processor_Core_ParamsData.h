@@ -68,6 +68,7 @@ public:
 		
 	}
 public:
+	  
 	//*******************Please add variables below*******************
 };
 
