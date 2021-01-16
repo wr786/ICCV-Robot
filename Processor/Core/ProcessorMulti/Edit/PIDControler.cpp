@@ -150,7 +150,7 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
             steer_back = angle_err>0? -400:400; //方向盘打死
             vars->reverse=1;
             vars->State=BYPASS;
-            vars->T=200;  //每次给予T这么久用他的算法走
+            vars->T=vars->TMAX;  //每次给予T这么久用他的算法走
         }
     }
     // else// 如果前方安全距离之外，而且不是在倒车，但是我前进时应该BYPASS
@@ -181,7 +181,8 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
             vars->State=BYPASS;
             steer=angle_err>0? 400:-400;
         }
-    vars->T--;  //每次T--
+    if(vars->T > 0)
+        vars->T--;  //每次T--
     if(vars->T==0) {  vars->State=DEFAULT; } //预留T这么久够我避障了，反正新的避障任务重新赋值T=200
     if(vars->State==BYPASS)  
         return {speed,steer}; 
