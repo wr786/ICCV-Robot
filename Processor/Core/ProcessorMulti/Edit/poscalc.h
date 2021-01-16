@@ -15,7 +15,7 @@ public:
     double ypos;
     int posid;      // 位置编号
 
-    Position(double x=-1, double y=-1, int pid=-1): xpos(x), ypos(y), posid(pid) {}
+    Position(double x=0, double y=0, int pid=-1): xpos(x), ypos(y), posid(pid) {}
 };
 
 // 用于存放各个地点，一般来说即门牌号
@@ -24,7 +24,8 @@ static Position position[POSNUM];
 static int tarx, tary; // 目标x、目标y，即x[j]-x[i], y[j]-y[i]
 #define rlimit 8
 
-static int countdown;
+static int countdown = 0;
+static int adj_countdown = 0;
 
 inline double get_delta2(double a, double b);
 bool poscalc_countdown();
@@ -35,6 +36,8 @@ void set_target(int addr1, int addr2);
 void clear_target();
 bool reach_target(double botx, double boty);
 void next_target();
+
+bool adjust_lazytag(double botx, double boty);
 
 #define POSCALC_H
 

@@ -28,12 +28,13 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
 
     int steer, speed;
 
+    // 如果到达了目的地，就不会调用calc_steer，所以无需判断
     // 首先判断是否到达目的地，如果到达就停止
-    if(vars->is_arrive) {
-        steer=vars->baseSteer;
-        speed=0;
-        return {speed, steer};
-    }
+    // if(vars->is_arrive) {
+    //     steer=vars->baseSteer;
+    //     speed=0;
+    //     return {speed, steer};
+    // }
    
     int leftSum = 0, rightSum = 0;
     /*int l_tot=0, r_tot=0,my_turning;
@@ -90,7 +91,7 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
         err -= 5;   // then turn left! 有时只有左转路口、前面也有墙，就左转
     }
 
-    qDebug() << err << " ";
+    // qDebug() << err << " ";
 
     steer = vars->pid.step(err);
     speed = 150; // turning should be a bit slower
@@ -181,14 +182,32 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
             vars->State=BYPASS;
             steer=angle_err>0? 400:-400;
         }
+
+    //---------------------------------以下为调头状态------------------------------------------------------------
+    // 我们不在此做任何判断，判断交给poscalc里的adjust_lazytag()来判断
+    // 如果判断了要掉头，那么State == ADJUST
+    int adj_speed = 100;
+    int adj_steer = 400;
+    // 我们默认启用State = ADJUST的时候，车会在上一个终点
+    // 那么它应该是在中线附近的。
+    // 但是，调头的时候显然还要考虑会不会撞到墙壁
+    // 还好，凭借上面的判断，在撞到墙壁之前，肯定会把State设置为BYPASS
+    // 那么这里就无视会不会撞到了
+    // 但是需要调参，来保证能转头。
+
+
+
+    // 重置状态
     if(vars->T > 0)
         vars->T--;  //每次T--
-    if(vars->T==0) {  vars->State=DEFAULT; } //预留T这么久够我避障了，反正新的避障任务重新赋值T=200
-    if(vars->State==BYPASS)  
+    if(vars->T==0) {  vars->State=DEFAULT; } //预留T这么久够我避障了，反正新的避障任务重新赋值T=TMAX
+
+    if(vars->State == BYPASS)  
         return {speed,steer}; 
-    else 
+    else if(vars->State == DEFAULT)
         return {speed,tmp_steer}; 
-        
+    else if(vars->State == ADJUST)
+        return {adj_speed, adj_steer};        
 /*对比规划的方向，is_right=0时才需要判断,知道is_right=1以后照走即可
     if(!(vars->is_right)&&(vars->State!=BYPASS){  //切记，避障就是第一优先级
         //还没有确定正确路径，我在正确的顺时针  || 我在正确地逆时针

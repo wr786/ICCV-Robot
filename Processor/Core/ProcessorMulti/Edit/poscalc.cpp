@@ -60,7 +60,7 @@ Position get_position(int address) {
         case 2221:
         case 2222: return position[14];
         default:
-            return Position(-1, -1, -1);
+            return Position(0, 0, -1);
     }
 }
 
@@ -95,4 +95,19 @@ void next_target() {
     if(currid == ROUTELEN) return;
     set_target(route[currid], route[currid + 1]);
     currid++;
+
+    // 设置观察是否需要调头
+    adj_countdown = 3;
+}
+
+/* adjust_lazytag - to judge if we need to turn at init */
+bool adjust_lazytag(double botx, double boty) {
+    if(adj_countdown <= 0) return false;
+    adj_countdown -= 1;
+    if(adj_countdown == 0) {
+        double biasPrev = get_delta2(0, tarx) + get_delta2(0, tary);
+        double biasCurr = get_delta2(botx, tarx) + get_delta2(boty, tary);
+        return biasCurr > biasPrev;
+    }
+    return false;
 }
