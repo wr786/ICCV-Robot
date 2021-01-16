@@ -99,6 +99,9 @@ public:
 	int ZeroY = -500;
 	double logodd_occu = 1;
 	double logodd_free = -0.7;
+
+	/* poscalc */
+	bool positionsInited = false;
 };
 
 /*! @}*/ 

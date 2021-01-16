@@ -150,6 +150,11 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
         return 0;
     }
 
+	if(!vars->positionsInited) {
+		init_positions();
+		vars->positionsInited = true;
+	}
+
 	// 如果这时候到达了终点
 	if(reach_target(inputdata_0.front()->x, inputdata_0.front()->y)) {
 		clear_target();	// 清除目标
@@ -169,7 +174,7 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 	} else {
 		// 正在行进，使用PID
 		std::pair<short, short> ret = calc_steer(dis, yaw, laserSize, laserData, laserUnit, params, vars);
-    	speed = ret.first;
+    	speed = -ret.first;
     	steer = ret.second;
 	    qDebug() << speed << ' ' << steer << endl;
 	}

@@ -2,8 +2,8 @@
 #include "poscalc.h"
 
 /* get_delta2 - get (a-b)^2 */
-inline int get_delta2(int a, int b) {
-    int c = a-b;
+inline double get_delta2(double a, double b) {
+    double c = a-b;
     return c*c;
 }
 
@@ -20,14 +20,46 @@ bool poscalc_countdown() {
 /* init_positions - init the positions */
 void init_positions() {
     // position[i] = Position(x[i], y[i], i);
-    //todo 类似上面地建立标号与坐标的关系
+    position[1] = Position(5.17197, -0.0997239, 1);
+    position[2] = Position(11.1404, 0.155884, 2);
+    position[3] = Position(25.9149, 0.257952, 3);
+    position[4] = Position(34.1626, 11.0058, 4);
+    position[5] = Position(34.7748, 14.7281, 5);
+    position[6] = Position(34.9851, 16.0653, 6);
+    position[7] = Position(36.2898, 23.712, 7);
+    position[8] = Position(37.7327, 31.1132, 8);
+    position[9] = Position(26.9643, 39.2364, 9);
+    position[10] = Position(-3.91619, 40.2907, 10);
+    position[11] = Position(-5.91603, 35.1465, 11);
+    position[12] = Position(-6.58897, 33.4505, 12);
+    position[13] = Position(-12.8488, 19.7759, 13);
+    position[14] = Position(-14.6157, 14.8986, 14);
 }
 
 /* get_position - get the Position object of #address */
 Position get_position(int address) {
-    //todo 添加门牌号与编号的对应
     switch(address) {
-
+        case 2224: return position[1];
+        case 2225: return position[2];
+        case 2229: return position[3];
+        case 2245: return position[4];
+        case 2246: return position[5];
+        case 2247: return position[6];
+        case 2252: return position[7];
+        case 2255:
+        case 2256: return position[8];
+        case 2260: return position[9];
+        case 2208:
+        case 2209: return position[10];
+        case 2210:
+        case 2211: return position[11];
+        case 2212: return position[12];
+        case 2217:
+        case 2218: return position[13];
+        case 2219:
+        case 2220:
+        case 2221:
+        case 2222: return position[14];
         default:
             return Position(-1, -1, -1);
     }
@@ -47,7 +79,7 @@ void clear_target() {
 }
 
 /* reach_target - judge if the bot reaches the target */
-bool reach_target(int botx, int boty) {
+bool reach_target(double botx, double boty) {
     if(tarx == 0 && tary == 0) {
         // 没有目标，那必然不能算作达到目标
         return false;
