@@ -140,6 +140,8 @@ public:
 	double logodd_occu = 1;
 	double logodd_free = -0.7;
 
+    int T = 200;
+
 	/* poscalc */
 	bool positionsInited = false;
 };

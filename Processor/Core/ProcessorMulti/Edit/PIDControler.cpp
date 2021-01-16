@@ -35,8 +35,8 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
         return {speed, steer};
     }
    
-    /*int leftSum = 0, rightSum = 0;
-    int l_tot=0, r_tot=0,my_turning;
+    int leftSum = 0, rightSum = 0;
+    /*int l_tot=0, r_tot=0,my_turning;
     //先不替换0，l_tot, r_tot以后也可能有用
     //注意捕捉第一个路口是向右还是向左，双路口特判再说
     //统计如果右侧30度的合计小于small_sum, 认为第一个路口是向右
@@ -147,7 +147,7 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
     if(front_dis<vars->safeDistance)
     {
         if(!vars->reverse){  //这是第一次发现我要避障，注意，State是用于确认控制模式，reverse是对应速度后退
-            steer_back = angel_err>0? -400:400; //方向盘打死
+            steer_back = angle_err>0? -400:400; //方向盘打死
             vars->reverse=1;
             vars->State=BYPASS;
             vars->T=200;  //每次给予T这么久用他的算法走
