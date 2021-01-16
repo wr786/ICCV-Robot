@@ -24,6 +24,7 @@
 #include "ProcessorMulti_Processor_Core_ParamsData.h"
 #include "PIDControler.h"
 #include "OGM.h"
+#include "poscalc.h"
 
 enum PID_State {
     DEFAULT = 0, // State=0: 走过道中线（default）
@@ -138,6 +139,9 @@ public:
 	int ZeroY = -500;
 	double logodd_occu = 1;
 	double logodd_free = -0.7;
+
+	/* poscalc */
+	bool positionsInited = false;
 };
 
 /*! @}*/ 
