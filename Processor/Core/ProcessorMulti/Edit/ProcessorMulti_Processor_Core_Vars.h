@@ -148,6 +148,8 @@ public:
 
     double lastBotX = 0;
     double lastBotY = 0;
+	double relOdom = 0;
+	const double deltaOdom = 0.5;
 };
 
 /*! @}*/ 

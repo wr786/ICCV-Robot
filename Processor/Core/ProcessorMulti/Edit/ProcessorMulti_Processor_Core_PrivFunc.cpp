@@ -164,10 +164,19 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 		vars->State = ADJUST;
 	}
 
+	// 到达终点后，继续前进一段距离，以期减小误差
+	if(vars->relOdom > 0) {
+		// 前进的距离达到预期，那么停下来并清除目标
+		if(abs(vars->relOdom - inputdata_0.front()->odometry) >= deltaOdom) {
+			vars->relOdom = 0;
+			clear_target();	// 清除目标
+			qDebug() << inputdata_0.front()->x << ", " << inputdata_0.front()->y << endl;
+		}
+	}
+
 	// 如果这时候到达了终点
-    if(reach_target(botx, boty)) {
-        clear_target();	// 清除目标
-        qDebug() << inputdata_0.front()->x << ", " << inputdata_0.front()->y << endl;
+    if(reach_target(botx, boty) && vars->relOdom == 0) {
+		vars->relOdom = inputdata_0.front()->odometry;
 	}
 
 //    qDebug() << "(" << tarx << ", " << tary << ")\n";
