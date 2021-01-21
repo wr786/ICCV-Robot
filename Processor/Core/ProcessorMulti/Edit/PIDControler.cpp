@@ -4,6 +4,7 @@
 #include "ProcessorMulti_Processor_Core_Vars.h"
 using namespace std;
 
+
 void PIDControler::set_ks(double kp, double ki, double kd) {
     k_p = kp;
     k_i = ki;
@@ -186,7 +187,7 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
     //---------------------------------以下为调头状态------------------------------------------------------------
     // 我们不在此做任何判断，判断交给poscalc里的adjust_lazytag()来判断
     // 如果判断了要掉头，那么State == ADJUST
-    int adj_speed = 100;
+    int adj_speed = 180;
     int adj_steer = 400;
     // 我们默认启用State = ADJUST的时候，车会在上一个终点
     // 那么它应该是在中线附近的。
@@ -201,6 +202,8 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
     if(vars->T > 0)
         vars->T--;  //每次T--
     if(vars->T==0) {  vars->State=DEFAULT; } //预留T这么久够我避障了，反正新的避障任务重新赋值T=TMAX
+
+    qDebug() << "State = " << vars->State << endl;
 
     if(vars->State == BYPASS)  
         return {speed,steer}; 

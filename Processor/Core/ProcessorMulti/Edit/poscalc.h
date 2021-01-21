@@ -1,11 +1,10 @@
 #ifndef POSCALC_H
 
-#define ROUTELEN 20
 // 存放路径，里面写的是门牌号
 // ROUTELEN为路径的长度，一起修改
-#define ROUTELEN 20
+#define ROUTELEN 5
 //! write the route here
-static int route[ROUTELEN] = {};
+static int route[ROUTELEN] = {2224, 2225, 2229, 2245, 2252};
 // 现在运动到了route中的哪个idx
 static int currid = 0;
 
@@ -21,8 +20,8 @@ public:
 // 用于存放各个地点，一般来说即门牌号
 #define POSNUM 15
 static Position position[POSNUM];
-static int tarx, tary; // 目标x、目标y，即x[j]-x[i], y[j]-y[i]
-#define rlimit 8
+extern double tarx, tary; // 目标x、目标y，即x[j]-x[i], y[j]-y[i]
+#define rlimit 0.7
 
 static int countdown = 0;
 static int adj_countdown = 0;

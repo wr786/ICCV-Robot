@@ -140,11 +140,14 @@ public:
 	double logodd_occu = 1;
 	double logodd_free = -0.7;
 
-    int T = 100;
-    int TMAX = 100;
+    int T = 120;
+    int TMAX = 120;
 
 	/* poscalc */
 	bool positionsInited = false;
+
+    double lastBotX = 0;
+    double lastBotY = 0;
 };
 
 /*! @}*/ 

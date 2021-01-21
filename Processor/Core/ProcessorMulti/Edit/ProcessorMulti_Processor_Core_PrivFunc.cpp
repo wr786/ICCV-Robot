@@ -150,6 +150,9 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
         return 0;
     }
 
+    double botx = inputdata_0.front()->x - vars->lastBotX;
+    double boty = inputdata_0.front()->y - vars->lastBotY;
+
 	// 初次使用，初始化一下各个点的坐标
 	if(!vars->positionsInited) {
 		init_positions();
@@ -157,16 +160,17 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 	}
 
 	// 判断是否需要调头
-	if(adjust_lazytag(inputdata_0.front()->x, inputdata_0.front()->y)) {
+    if(adjust_lazytag(botx, boty)) {
 		vars->State = ADJUST;
 	}
 
 	// 如果这时候到达了终点
-	if(reach_target(inputdata_0.front()->x, inputdata_0.front()->y)) {
-		clear_target();	// 清除目标
-		qDebug() << "[INFO] Target " << currid << endl;
+    if(reach_target(botx, boty)) {
+        clear_target();	// 清除目标
+        qDebug() << inputdata_0.front()->x << ", " << inputdata_0.front()->y << endl;
 	}
 
+//    qDebug() << "(" << tarx << ", " << tary << ")\n";
 	if(tarx == 0 && tary == 0) {
 		// 没有目标，应该正在待机
 		speed = 0;
@@ -177,14 +181,16 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 			// 暂停一段时间，再去下一个地点
 			next_target();
 			// 重新计算x和y
-			inputdata_0.front()->x = inputdata_0.front()->y = 0;
+            vars->lastBotX = inputdata_0.front()->x;
+            vars->lastBotY = inputdata_0.front()->y;
+//			inputdata_0.front()->x = inputdata_0.front()->y = 0;
 		}
 	} else {
 		// 正在行进，使用PID
 		std::pair<short, short> ret = calc_steer(dis, yaw, laserSize, laserData, laserUnit, params, vars);
     	speed = -ret.first;
     	steer = ret.second;
-	    qDebug() << speed << ' ' << steer << endl;
+        qDebug() << speed << ' ' << steer << endl;
 	}
 
     //=================added=================

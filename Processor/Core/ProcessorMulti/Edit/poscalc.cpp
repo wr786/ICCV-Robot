@@ -1,4 +1,7 @@
 #include "poscalc.h"
+#include "ProcessorMulti_Processor_Core_Vars.h"
+
+double tarx, tary;
 
 /* get_delta2 - get (a-b)^2 */
 inline double get_delta2(double a, double b) {
@@ -8,8 +11,9 @@ inline double get_delta2(double a, double b) {
 
 /* poscalc_countdown - count down in poscalc */
 bool poscalc_countdown() {
+//    qDebug() << "countdown: " << countdown << endl;
     if(countdown == 0) {
-        countdown = 40;
+        countdown = 160;
     } else {
         countdown -= 1;
     }
@@ -70,6 +74,7 @@ void set_target(int addr1, int addr2) {
     Position tar2 = get_position(addr2);
     tarx = tar2.xpos - tar1.xpos;
     tary = tar2.ypos - tar1.ypos;
+    qDebug() << "target set: " << tarx << ", " << tary << endl;
 }
 
 /* clear_target - clear the tarx and tary */
@@ -84,6 +89,7 @@ bool reach_target(double botx, double boty) {
         return false;
     }
     if(get_delta2(botx, tarx) + get_delta2(boty, tary) <= rlimit) {
+        qDebug() << "[INFO] Target " << currid << endl;
         return true;
     } else {
         return false;
@@ -107,6 +113,9 @@ bool adjust_lazytag(double botx, double boty) {
     if(adj_countdown == 0) {
         double biasPrev = get_delta2(0, tarx) + get_delta2(0, tary);
         double biasCurr = get_delta2(botx, tarx) + get_delta2(boty, tary);
+        if(biasCurr > biasPrev) {
+            qDebug() << "Adjusting\n";
+        }
         return biasCurr > biasPrev;
     }
     return false;
