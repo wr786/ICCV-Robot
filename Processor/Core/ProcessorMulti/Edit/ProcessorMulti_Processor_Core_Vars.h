@@ -125,6 +125,8 @@ public:
     int safeAngle = 45;
     int safeDistance = 50;
     int forwardDetectRange = 5;
+	
+	int turningTimestamp = 0;
 
 	/* 地图相关 */
 	int mapWidth = 640;

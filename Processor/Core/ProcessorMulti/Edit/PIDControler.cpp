@@ -185,16 +185,39 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
         }
 
     //---------------------------------以下为调头状态------------------------------------------------------------
-    // 我们不在此做任何判断，判断交给poscalc里的adjust_lazytag()来判断
-    // 如果判断了要掉头，那么State == ADJUST
-    int adj_speed = 180;
-    int adj_steer = 400;
-    // 我们默认启用State = ADJUST的时候，车会在上一个终点
-    // 那么它应该是在中线附近的。
-    // 但是，调头的时候显然还要考虑会不会撞到墙壁
-    // 还好，凭借上面的判断，在撞到墙壁之前，肯定会把State设置为BYPASS
-    // 那么这里就无视会不会撞到了
-    // 但是需要调参，来保证能转头。
+    if(vars->State == ADJUST) {
+        vars->turningTimestamp = 100;
+        vars->State = DEFAULT;
+    }
+    if(vars->turningTimestamp > 0) {
+        vars->turningTimestamp--;
+        if(vars->turningTimestamp >= 80) {
+            // 第一段，向右转
+            return {180, 600};
+        } else if(vars->turningTimestamp >= 60) {
+            // 第二段，向后退
+            return {-180, 600};
+        } else if(vars->turningTimestamp >= 40) {
+            // 第三段，向右转
+            return {180, 600};
+        } else if(vars->turningTimestamp >= 20) {
+            // 第四段，向后退
+            return {-180, 600};
+        } else {
+            // 第五段，向右转
+            return {180, 600};
+        }
+    }
+    // // 我们不在此做任何判断，判断交给poscalc里的adjust_lazytag()来判断
+    // // 如果判断了要掉头，那么State == ADJUST
+    // int adj_speed = 180;
+    // int adj_steer = 400;
+    // // 我们默认启用State = ADJUST的时候，车会在上一个终点
+    // // 那么它应该是在中线附近的。
+    // // 但是，调头的时候显然还要考虑会不会撞到墙壁
+    // // 还好，凭借上面的判断，在撞到墙壁之前，肯定会把State设置为BYPASS
+    // // 那么这里就无视会不会撞到了
+    // // 但是需要调参，来保证能转头。
 
 
 

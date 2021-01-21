@@ -179,7 +179,7 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 		vars->relOdom = inputdata_0.front()->odometry;
 	}
 
-//    qDebug() << "(" << tarx << ", " << tary << ")\n";
+	// qDebug() << "(" << tarx << ", " << tary << ")\n";
 	if(tarx == 0 && tary == 0) {
 		// 没有目标，应该正在待机
 		speed = 0;
