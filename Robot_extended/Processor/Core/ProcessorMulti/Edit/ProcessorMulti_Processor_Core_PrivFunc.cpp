@@ -139,12 +139,12 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
     double botx = inputdata_0.front()->x - vars->lastBotX;
     double boty = inputdata_0.front()->y - vars->lastBotY;
 
-	if(posesign_stop()) {
+	if(posesign_stop(inputdata_2.front())) {
 		vars->ispause = true;
 	}
 
 	if(vars->ispause) {
-		if(posesign_start()) {
+		if(posesign_start(inputdata_2.front())) {
 			vars->ispause = false;
 			vars->ifpaused = true;
 		}
@@ -195,7 +195,7 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 		// 没有目标，应该正在待机
 		speed = 0;
 		steer = 0;
-		if(posesign_start()) {
+		if(posesign_start(inputdata_2.front())) {
 			// 暂停一段时间，再去下一个地点
 			next_target();
 			// 重新计算x和y
