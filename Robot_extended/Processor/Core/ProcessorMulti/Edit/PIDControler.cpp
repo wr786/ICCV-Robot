@@ -231,9 +231,7 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
     if(vars->State == BYPASS)  
         return {speed,steer}; 
     else if(vars->State == DEFAULT)
-        return {speed,tmp_steer}; 
-    else if(vars->State == ADJUST)
-        return {adj_speed, adj_steer};        
+        return {speed,tmp_steer};       
 /*对比规划的方向，is_right=0时才需要判断,知道is_right=1以后照走即可
     if(!(vars->is_right)&&(vars->State!=BYPASS){  //切记，避障就是第一优先级
         //还没有确定正确路径，我在正确的顺时针  || 我在正确地逆时针

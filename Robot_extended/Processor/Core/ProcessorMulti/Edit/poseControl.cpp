@@ -4,7 +4,7 @@
 // #include <openni2/OpenNI.h>
 #include <NiTE.h>
 
-#define NODE(i) inputdata_2.jointPos2D[i]
+#define NODE(i) inputdata_2->jointPos2D[i-1]
 /*
     点从0开始
     左手 3 5 7

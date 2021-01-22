@@ -22,6 +22,20 @@
 
 
 #include "ProcessorMulti_Processor_Core_ParamsData.h"
+#include "PIDControler.h"
+#include "poscalc.h"
+#include "poseControl.h"
+
+enum PID_State {
+    DEFAULT = 0,
+    BYPASS,
+    ADJUST
+};
+
+enum Direction {
+    CLOCKWISE = 0,
+    ANTI_CLOCKWISE
+};
 
 //The Vars is defined as below
 /*! \class ProcessorMulti_Processor_Core_Vars 
