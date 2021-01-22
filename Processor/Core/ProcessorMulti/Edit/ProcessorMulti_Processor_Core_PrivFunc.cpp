@@ -153,6 +153,17 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
     double botx = inputdata_0.front()->x - vars->lastBotX;
     double boty = inputdata_0.front()->y - vars->lastBotY;
 
+	if(posesign_stop()) {
+		vars->ispause = true;
+	}
+
+	if(vars->ispause) {
+		if(posesign_start()) {
+			vars->ispause = false;
+			vars->ifpaused = true;
+		}
+	}
+
 	// 初次使用，初始化一下各个点的坐标
 	if(!vars->positionsInited) {
 		init_positions();
@@ -171,6 +182,17 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 			vars->relOdom = 0;
 			clear_target();	// 清除目标
 			qDebug() << inputdata_0.front()->x << ", " << inputdata_0.front()->y << endl;
+		
+			/* 如果中途暂停过，说明已经提前拿走了资料
+			   那么不应该再在现在这个点停留，而是直接去下一个点 */
+			if(vars->ifpaused) {
+				next_target();
+				// 重新计算x和y
+				vars->lastBotX = inputdata_0.front()->x;
+				vars->lastBotY = inputdata_0.front()->y;
+			}
+
+			vars->ifpaused = false;
 		}
 	}
 
@@ -180,13 +202,14 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 	}
 
 	// qDebug() << "(" << tarx << ", " << tary << ")\n";
-	if(tarx == 0 && tary == 0) {
+	if(vars->ispause) {
+		speed = 0;
+		steer = 0;
+	} else if(tarx == 0 && tary == 0) {
 		// 没有目标，应该正在待机
 		speed = 0;
 		steer = 0;
-		//todo 这里的暂停是因为现在暂时没有手势识别
-		// 等以后有了手势识别，应该替换掉这里的暂停
-		if(poscalc_countdown()) {
+		if(posesign_start()) {
 			// 暂停一段时间，再去下一个地点
 			next_target();
 			// 重新计算x和y
