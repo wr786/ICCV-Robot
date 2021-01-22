@@ -117,11 +117,101 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
     //cv::imshow("color", inputdata_2.front()->cvColorImg);   // Show RGB image
     //cv::imshow("depth", inputdata_2.front()->cvDepthImg);   // Show depth image
 
-    
     short steer = 0;           // [-400, 400]
-    short speed = 0;           // [-180, 180]
+    short speed = 100;           // [-180, 180]
 
-    
+	/* 小车行驶的距离 */
+    double dis = inputdata_0.front()->odometry;
+	/* IMU航向角 */
+    double yaw = inputdata_0.front()->orientation * 4 * M_PI / (2 * M_PI + 4.00555081); 
+
+    int laserSize = inputdata_1.front()->datasize;
+    short* laserData = inputdata_1.front()->data;
+    double laserUnit = inputparams_1.front()->unit;
+
+	// OGM disabled
+	// calc_map(inputdata_0, inputdata_1, laserUnit, vars);
+
+    if(!laserData || !params || !vars) {    // errorData
+        return 0;
+    }
+
+    double botx = inputdata_0.front()->x - vars->lastBotX;
+    double boty = inputdata_0.front()->y - vars->lastBotY;
+
+	if(posesign_stop()) {
+		vars->ispause = true;
+	}
+
+	if(vars->ispause) {
+		if(posesign_start()) {
+			vars->ispause = false;
+			vars->ifpaused = true;
+		}
+	}
+
+	// 初次使用，初始化一下各个点的坐标
+	if(!vars->positionsInited) {
+		init_positions();
+		vars->positionsInited = true;
+	}
+
+	// 判断是否需要调头
+    if(adjust_lazytag(botx, boty)) {
+		vars->State = ADJUST;
+	}
+
+	// 到达终点后，继续前进一段距离，以期减小误差
+	if(vars->relOdom > 0) {
+		// 前进的距离达到预期，那么停下来并清除目标
+		if(abs(vars->relOdom - inputdata_0.front()->odometry) >= deltaOdom) {
+			vars->relOdom = 0;
+			clear_target();	// 清除目标
+			qDebug() << inputdata_0.front()->x << ", " << inputdata_0.front()->y << endl;
+		
+			/* 如果中途暂停过，说明已经提前拿走了资料
+			   那么不应该再在现在这个点停留，而是直接去下一个点 */
+			if(vars->ifpaused) {
+				next_target();
+				// 重新计算x和y
+				vars->lastBotX = inputdata_0.front()->x;
+				vars->lastBotY = inputdata_0.front()->y;
+			}
+
+			vars->ifpaused = false;
+		}
+	}
+
+	// 如果这时候到达了终点
+    if(reach_target(botx, boty) && vars->relOdom == 0) {
+		vars->relOdom = inputdata_0.front()->odometry;
+	}
+
+	// qDebug() << "(" << tarx << ", " << tary << ")\n";
+	if(vars->ispause) {
+		speed = 0;
+		steer = 0;
+	} else if(tarx == 0 && tary == 0) {
+		// 没有目标，应该正在待机
+		speed = 0;
+		steer = 0;
+		if(posesign_start()) {
+			// 暂停一段时间，再去下一个地点
+			next_target();
+			// 重新计算x和y
+            vars->lastBotX = inputdata_0.front()->x;
+            vars->lastBotY = inputdata_0.front()->y;
+//			inputdata_0.front()->x = inputdata_0.front()->y = 0;
+		}
+	} else {
+		// 正在行进，使用PID
+		std::pair<short, short> ret = calc_steer(dis, yaw, laserSize, laserData, laserUnit, params, vars);
+    	speed = -ret.first;
+    	steer = ret.second;
+        qDebug() << speed << ' ' << steer << endl;
+	}
+
+    //=================added=================
 
     // Show RGB image && compass
     double ori = - ((double)steer / 400.0) * (M_PI / 2.0);
