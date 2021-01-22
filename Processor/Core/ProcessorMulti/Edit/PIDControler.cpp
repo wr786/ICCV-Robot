@@ -208,6 +208,25 @@ calc_steer(double dis, double yaw, int laserSize, short *laserData, double laser
             return {180, 600};
         }
     }
+    // method 2：控制它BYPASS式倒退过度因而车头方向变成对的，再直行
+    // 手动设计，先右转一段，快要撞墙就后退（方向盘反向打死），后退得久一点车头就掉过头了，再变正向速度
+    /*
+    if(vars->turningTimestamp > 0){
+        vars->turningTimestamp--;
+
+    //  第一段，右转，不能让它到快要撞的地步，主要借助时间戳控制右转几乎是在楼道中，预留较大空间使其可以退过头    
+        if((vars->turningTimestamp >= 80) && (front_dis>vars->2*safeDistance))  
+            return {180,600}; 
+    //  第二段，倒退很久直到车头调过去
+        else if(vars->turningTimestamp >= 20) 
+        {
+            return {-180,400};  // 想象一下，车子倒退而方向盘右转就是车头向左，转很久就会扭过头
+        }   
+    }
+    */
+
+
+
     // // 我们不在此做任何判断，判断交给poscalc里的adjust_lazytag()来判断
     // // 如果判断了要掉头，那么State == ADJUST
     // int adj_speed = 180;
