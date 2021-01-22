@@ -25,6 +25,7 @@
 #include "PIDControler.h"
 #include "OGM.h"
 #include "poscalc.h"
+#include "poseControl.h"
 
 enum PID_State {
     DEFAULT = 0, // State=0: 走过道中线（default）
@@ -152,6 +153,10 @@ public:
     double lastBotY = 0;
 	double relOdom = 0;
 	const double deltaOdom = 0.5;
+
+	/* poseControl */
+	bool ispause = false;
+	bool ifpaused = false;
 };
 
 /*! @}*/ 
