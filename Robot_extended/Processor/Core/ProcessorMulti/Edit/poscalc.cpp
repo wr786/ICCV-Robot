@@ -103,7 +103,7 @@ void next_target() {
     currid++;
 
     // 设置观察是否需要调头
-    adj_countdown = 3;
+    adj_countdown = 5;
 }
 
 /* adjust_lazytag - to judge if we need to turn at init */

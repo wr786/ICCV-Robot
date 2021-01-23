@@ -4,7 +4,7 @@
 // #include <openni2/OpenNI.h>
 #include <NiTE.h>
 
-#define biasLimit 5
+#define biasLimit 10
 
 /* HELPER FUNCTIONS */
 bool is_higher_than(cv::Point p1, cv::Point p2);

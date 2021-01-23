@@ -4,7 +4,7 @@
 // ROUTELEN为路径的长度，一起修改
 #define ROUTELEN 5
 //! write the route here
-static int route[ROUTELEN] = {2224, 2225, 2229, 2245, 2252};
+static int route[ROUTELEN] = {2224, 2245, 2229, 2245, 2252};
 // 现在运动到了route中的哪个idx
 static int currid = 0;
 
@@ -21,7 +21,7 @@ public:
 #define POSNUM 15
 static Position position[POSNUM];
 extern double tarx, tary; // 目标x、目标y，即x[j]-x[i], y[j]-y[i]
-#define rlimit 0.7
+#define rlimit 1
 
 static int countdown = 0;
 static int adj_countdown = 0;

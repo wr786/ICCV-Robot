@@ -21,6 +21,10 @@ bool DECOFUNC(setParamsVarsOpenNode)(QString qstrConfigName, QString qstrNodeTyp
 	3: If everything is OK, return 1 for successful opening and vice versa.
 	*/
 	
+    vars->pid.set_ks(vars->k_p, vars->k_i, vars->k_d);
+    vars->pid.reset();
+    vars->reverse = false;
+
 	return 1;
 }
 
@@ -85,6 +89,7 @@ void DECOFUNC(getMultiInputDataSize)(void * paramsPtr, void * varsPtr, QList<int
 	*/
 }
 
+#define POSCTRL
 
 //Input Port #0: Buffer_Size = 10, Params_Type = SourceDrainMono_Sensor_EncoderIMU_Params, Data_Type = SourceDrainMono_Sensor_EncoderIMU_Data
 //Input Port #1: Buffer_Size = 10, Params_Type = SensorTimer_Sensor_URG_Params, Data_Type = SensorTimer_Sensor_URG_Data
@@ -139,6 +144,7 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
     double botx = inputdata_0.front()->x - vars->lastBotX;
     double boty = inputdata_0.front()->y - vars->lastBotY;
 
+#ifdef POSCTRL
 	if(posesign_stop(inputdata_2.front())) {
 		vars->ispause = true;
 	}
@@ -149,6 +155,7 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 			vars->ifpaused = true;
 		}
 	}
+#endif
 
 	// 初次使用，初始化一下各个点的坐标
 	if(!vars->positionsInited) {
@@ -169,6 +176,7 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 			clear_target();	// 清除目标
 			qDebug() << inputdata_0.front()->x << ", " << inputdata_0.front()->y << endl;
 		
+#ifdef POSCTRL
 			/* 如果中途暂停过，说明已经提前拿走了资料
 			   那么不应该再在现在这个点停留，而是直接去下一个点 */
 			if(vars->ifpaused) {
@@ -179,6 +187,7 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 			}
 
 			vars->ifpaused = false;
+#endif
 		}
 	}
 
@@ -195,7 +204,11 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 		// 没有目标，应该正在待机
 		speed = 0;
 		steer = 0;
+#ifdef POSCTRL
 		if(posesign_start(inputdata_2.front())) {
+#else
+        if(poscalc_countdown()) {
+#endif
 			// 暂停一段时间，再去下一个地点
 			next_target();
 			// 重新计算x和y
@@ -208,7 +221,7 @@ bool DECOFUNC(processMultiInputData)(void * paramsPtr, void * varsPtr, QVector<Q
 		std::pair<short, short> ret = calc_steer(dis, yaw, laserSize, laserData, laserUnit, params, vars);
     	speed = -ret.first;
     	steer = ret.second;
-        qDebug() << speed << ' ' << steer << endl;
+//        qDebug() << speed << ' ' << steer << endl;
 	}
 
     //=================added=================

@@ -39,6 +39,9 @@ bool posesign_start(SensorTimer_Sensor_xtion_Data * inputdata_2) {
         }
     }
 
+    if(leftHandUp || rightHandUp)
+        qDebug() << "START!";
+
     return leftHandUp || rightHandUp;
 }
 
@@ -57,15 +60,20 @@ bool posesign_stop(SensorTimer_Sensor_xtion_Data * inputdata_2) {
 
     /* 判断是否左手平抬 */
     if(is_horizon(leftRoot, leftMid) && is_horizon(leftMid, leftEnd)) {
-        leftHandH = true;
+        if(leftRoot.x && leftMid.x && leftEnd.x)
+            leftHandH = true;
     }
 
     /* 判断是否右手平抬 */
     if(is_horizon(rightRoot, rightMid) && is_horizon(rightMid, rightEnd)) {
-        rightHandH = true;
+        if(rightRoot.x && rightMid.x && rightEnd.x)
+            rightHandH = true;
     }
 
-    return leftHandH && rightHandH;
+    if(leftHandH || rightHandH)
+        qDebug() << "Stop!";
+
+    return leftHandH || rightHandH;
 }
 
 /* helper functions */
@@ -87,5 +95,5 @@ bool is_vertical(cv::Point p1, cv::Point p2) {
 }
 
 bool is_horizon(cv::Point p1, cv::Point p2) {
-    return (p1.y - p2.y) < biasLimit;
+    return (p1.y - p2.y) < biasLimit && (p1.x - p2.x) >= biasLimit ;
 }
