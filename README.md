@@ -2,8 +2,6 @@
 
 带交互的楼道搬运小车
 
+Based on [RobotSDK](https://github.com/RobotSDK)
+
 [实现原理](./docs)
-### today's work: (2021.1.21)
-1. 掉头
-2. 骨骼节点
-3. 思考一下结题报告的组织
